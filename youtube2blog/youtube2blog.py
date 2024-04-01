@@ -192,44 +192,48 @@ class Audio2Text:
         return chat_completion.choices[0].message.content
 
 
-def main() -> None:
+def main():
     a2t = Audio2Text()
 
-    cprint(BANNER, "indian_red_1c")
-    cprint("What do you want to do?")
-    cprint("1) Write blog post\n2) Get tags\n3) Get transcript\n4) Exit", "light_cyan")
-    opt = input("Enter an option (1-4): ").strip().lower()
-    if opt == "4":
-        exit(0)
-    if opt not in [*"1234"]:
-        cprint("Not a valid option, try again.", "red")
-        exit(1)
+    while True:  # Encapsulate the menu in a loop
+        os.system(CLEAR)
+        cprint(BANNER, "indian_red_1c")
+        cprint("What do you want to do?")
+        cprint("1) Write blog post\n2) Get tags\n3) Get transcript\n4) Exit", "light_cyan")
+        opt = input("Enter an option (1-4): ").strip().lower()
 
-    os.system(CLEAR)
-    cprint("Choose the audio:")
-    cprint("1) From youtube video\n2) From local file", "light_cyan")
-    opt2 = input("Enter an option (1-2): ").strip().lower()
-    if opt2 not in [*"12"]:
-        cprint("Not a valid option, try again.", "red")
-        exit(1)
-    os.system(CLEAR)
+        if opt == "4":
+            break  # Break out of the loop to exit
+        elif opt not in ["1", "2", "3"]:
+            cprint("Not a valid option, try again.", "red")
+            continue
 
-    a2t.from_youtube = True if opt2 == "1" else False
+        os.system(CLEAR)
+        cprint("Choose the audio:")
+        cprint("1) From youtube video\n2) From local file", "light_cyan")
+        opt2 = input("Enter an option (1-2): ").strip().lower()
+        if opt2 not in ["1", "2"]:
+            cprint("Not a valid option, try again.", "red")
+            continue
+        os.system(CLEAR)
 
-    start = time()
-    transcript = a2t.transcribe_audio()
-    if opt == "1":
-        result = a2t.get_blog_post(transcript)
-        Utility.pretty_print(result, "blog")
-    elif opt == "2":
-        result = a2t.get_tags(transcript)
-        Utility.pretty_print_tags(result)
-    elif opt == "3":
-        Utility.pretty_print(transcript, "transcript")
+        a2t.from_youtube = opt2 == "1"
 
-    end = time()
-    cprint(f"\nTime taken: {end-start:.4f} s", "light_red")
+        start = time()
+        transcript = a2t.transcribe_audio()
+        if opt == "1":
+            result = a2t.get_blog_post(transcript)
+            Utility.pretty_print(result, "blog")
+        elif opt == "2":
+            result = a2t.get_tags(transcript)
+            Utility.pretty_print_tags(result)
+        elif opt == "3":
+            Utility.pretty_print(transcript, "transcript")
 
+        end = time()
+        cprint(f"\nTime taken: {end-start:.4f} s", "light_red")
+
+        input("Press Enter to return to the main menu...")  # Prompt to return to the main menu
 
 if __name__ == "__main__":
     main()
